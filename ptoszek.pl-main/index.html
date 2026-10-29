@@ -1,128 +1,59 @@
-<!--
-    ptoszek.pl
-    Powered by Jaczup
+// Twoja lista plików do pobrania (nazwy dokładnie z Twojego zrzutu ekranu)
+const FILE_DOWNLOADS = [
+    'media/images/images.jpeg',
+    'media/images/vollite w okularach.jpeg',
+    'media/images/Zrzut ekranu 2026-10-26 191552.png',
+    'media/images/Zrzut ekranu 2026-10-26 192749.png',
+    'media/images/Zrzut ekranu 2026-10-26 201452.png',
+    'media/images/Zrzut ekranu 2026-10-26 202435.png',
+    'media/images/Zrzut ekranu 2026-10-27 144104.png',
+    'media/images/Zrzut ekranu 2026-10-27 150220.png',
+    'media/images/Zrzut ekranu 2026-10-28 191003.png'
+];
 
-    My version (ptoszek.pl): 
-    - https://github.com/jaczup/ptoszek.pl
-    Original version (theannoyingsite.com): 
-    - https://github.com/feross/TheAnnoyingSite.com/
+// Odpala cały motyw po wciśnięciu spacji
+window.addEventListener('keydown', function(e) {
+    if (e.code === 'Space') {
+        e.preventDefault(); // żeby strona nie skakała w dół
+        uruchomWlam();
+    }
+});
 
-    Contact with me: https://jaczup.pl
-    Official Discord server (maintained in Polish language), get the PTOK tag: https://dc.ptoszek.pl
+function uruchomWlam() {
+    // 1. Pokazujemy film i go włączamy
+    const videoContainer = document.getElementById('video-container');
+    const video = document.getElementById('pajac-video');
     
-    Contributors:
-      @jaczup - https://github.com/jaczup
-
-    Dziurwa był tutaj 🚎
--->
-<!doctype html>
-<html>
-<head>
-  <title>Ptoszek - DARMOWE ROBUXY</title>
-  <meta charset='UTF-8'>
-    <style>
-    html, body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'avenir next', avenir,
-        'helvetica neue', helvetica, ubuntu, roboto, noto, 'segoe ui', arial,
-        sans-serif;
-      background-color: #1b1c1d;
-      color: white;
-      overflow-x: hidden;
+    if (videoContainer.style.display !== 'block') {
+        videoContainer.style.display = 'block';
+        video.play();
     }
-    .hello-message {
-      margin: 40px;
-      text-align: center;
-    }
-    .logout-messages {
-      pointer-events: none;
-      color: red;
-      margin: 40px;
-      position: fixed;
-      top: 0;
-      left: 0;
-      text-shadow: 2px 2px #FFF, 4px 4px 10px #000;
-      z-index: 10;
-    }
-    img.ptak-img {
-      width: 300px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    img.ptak-img:hover {
-      transform: scale(1.05);
-    }
-    #pobieranie-box img {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border: 2px solid red;
-      margin: 5px;
-    }
-    @keyframes blurslowly {
-      0% { filter: none; }
-      92% { filter: blur(0); }
-      96% { filter: blur(1px); }
-      100% { filter: blur(0); }
-    }
-    body {
-      animation-name: blurslowly;
-      animation-iteration-count: infinite;
-      animation-duration: 15s;
-      animation-play-state: running;
-    }
-  </style>
-  <link rel="icon" type="image/x-icon" href="media/images/ptok.jpg">
 
-  <meta property="og:title" content="Ptoszek" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://ptoszek.pl" />
-  <meta property="og:image" content="https://ptoszek.pl/media/images/ptok.jpg" />
-  <meta property="og:description" content="Obejrzyj zdjęcia Ptaków za frytę!" />
-  <meta name="keywords" content="ptoszek, ptok, ptoszek.pl, ptok.pl">
-  <meta name="description" content="Obejrzyj zdjęcia Ptaków za frytę!">
-  <meta name="theme-color" content="#34eb7d">
-</head>
-<body>
+    const pobieranieBox = document.getElementById('pobieranie-box');
+    pobieranieBox.innerHTML = '<h3 style="color: yellow;">Pobieranie plików na dysk...</h3>';
 
-<noscript>Po coś tego JavaScript wyłączył bamboszu!</noscript>
+    // 2. Automatyczne pobieranie wszystkich plików z tablicy
+    let count = 0;
+    const interval = setInterval(() => {
+        if (count < FILE_DOWNLOADS.length) {
+            const sciezkaPliku = FILE_DOWNLOADS[count];
+            
+            // Wyświetlenie miniatury na stronie
+            const img = document.createElement('img');
+            img.src = sciezkaPliku;
+            pobieranieBox.appendChild(img);
 
-<!-- Główna zawartość strony zrobiona tak, by pasowała do szablonu -->
-<div class='hello-message'>
-    <h1>Siemano kolano! DARMOWE ROBUXY!</h1>
-    <h2>We no walnij w spację albo kliknij w ptoszka, żeby odebrać nagrodę.</h2>
-    
-    <!-- Kliknięcie w gifa od razu odpala cały motyw -->
-    <img src='media/images/intro.gif' alt='Cute ptok' class='ptak-img' onclick='uruchomWlam()' />
-    
-    <!-- Ukryty odtwarzacz wideo, który wyskoczy po aktywacji -->
-    <div id="video-container" style="display: none; margin-top: 30px;">
-        <h2 style="color: red;">⚠️ WYKRYTO POBIERANIE DANYCH! ⚠️</h2>
-        <video id="pajac-video" width="560" controls>
-            <source src="media/videos/filmik.mp4" type="video/mp4">
-            Twoja przeglądarka nie obsługuje wideo.
-        </video>
-    </div>
+            // Fizyczne wymuszenie pobrania pliku przez przeglądarkę
+            const a = document.createElement('a');
+            a.href = sciezkaPliku;
+            a.download = sciezkaPliku.split('/').pop(); // Wyciąga samą nazwę pliku
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
 
-    <!-- Miejsce na generujące się i pobierające zdjęcia -->
-    <div id="pobieranie-box" style="margin-top: 20px;"></div>
-</div>
-
-<div class='logout-messages'></div>
-
-<script src='index.js'></script>   
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6S5388LRGM"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-6S5388LRGM');
-</script>
-
-</body>
-</html>
+            count++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 400); // Co 0.4 sekundy pobiera kolejny plik
+}
